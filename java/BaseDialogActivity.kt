@@ -34,7 +34,6 @@ abstract class BaseDialogActivity : AppCompatActivity(), Shizuku.OnRequestPermis
     WindowCompat.setDecorFitsSystemWindows(win, false)
     win.statusBarColor = Color.TRANSPARENT
     win.navigationBarColor = Color.TRANSPARENT
-    win.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
     WindowCompat.getInsetsController(win, win.decorView).systemBarsBehavior =
       WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
   }
@@ -139,7 +138,6 @@ abstract class BaseDialogActivity : AppCompatActivity(), Shizuku.OnRequestPermis
     setLayout(maxWidth, WindowManager.LayoutParams.WRAP_CONTENT)
     setGravity(Gravity.CENTER)
     attributes = attributes.apply {
-      flags = flags or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
       dimAmount = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) 0.2f else 0.6f
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) blurBehindRadius = BLUR_RADIUS
     }
