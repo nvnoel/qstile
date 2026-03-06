@@ -31,7 +31,8 @@ abstract class BaseDialogActivity : AppCompatActivity(), Shizuku.OnRequestPermis
 
   private fun setupEdgeToEdge() {
     val win = window
-    WindowCompat.setDecorFitsSystemWindows(win, false)
+    // true -> biarkan Android men-center dialog di dalam safe area (menghindari condong ke bawah di landscape)
+    WindowCompat.setDecorFitsSystemWindows(win, true)
     win.statusBarColor = Color.TRANSPARENT
     win.navigationBarColor = Color.TRANSPARENT
     WindowCompat.getInsetsController(win, win.decorView).systemBarsBehavior =

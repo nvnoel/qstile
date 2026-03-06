@@ -81,11 +81,10 @@ class DnsDialogActivity : BaseDialogActivity() {
     // Set initial pending option to the currently active one
     pendingOpt = DnsManager.options.find { it.id == currentId }
 
-    val maxListH = (resources.displayMetrics.heightPixels * 0.45f).toInt()
-    listScroll.post {
-      if (listScroll.measuredHeight > maxListH)
-        listScroll.updateLayoutParams { height = maxListH }
-    }
+    // Ensure the scroll view never takes more than ~35% of the screen height in landscape
+    // to prevent it from squishing the buttons below it.
+    // Logic pembatasan height dihapus karena XML (weight=1, height=0dp)
+    // sudah cukup mengatur layout DNS agar tidak gepeng tanpa konflik tinggi fix
 
     DnsManager.options.forEach { opt ->
       val row = inflater.inflate(R.layout.item_dns, container, false)

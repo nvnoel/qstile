@@ -82,25 +82,25 @@ class ResolutionDialogActivity : BaseDialogActivity() {
 
     d.show()
 
-    // Dynamic scaling agar muat di landscape
     val rootCard = d.findViewById<LinearLayout>(R.id.dialogRoot)?.parent as? View
     rootCard?.viewTreeObserver?.addOnPreDrawListener(object : android.view.ViewTreeObserver.OnPreDrawListener {
       override fun onPreDraw(): Boolean {
         rootCard.viewTreeObserver.removeOnPreDrawListener(this)
 
-        // Ukur tinggi utuh konten (unconstrained) untuk menghindari hasil yang sudah ter-clip oleh window
+        // Measure the view WITHOUT screen boundaries so we get the true required height
+        // This ensures the slider at the bottom is included in the measurement, not clipped
         rootCard.measure(
           View.MeasureSpec.makeMeasureSpec(rootCard.width, View.MeasureSpec.EXACTLY),
           View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         )
         val trueDialogHeight = rootCard.measuredHeight
         val screenHeight = resources.displayMetrics.heightPixels
-        val maxAllowedHeight = screenHeight - 32 // Margin atas-bawah
+        val maxAllowedHeight = screenHeight - 64 // 64px vertical margin
 
         if (trueDialogHeight > maxAllowedHeight && maxAllowedHeight > 0) {
           val scale = maxAllowedHeight.toFloat() / trueDialogHeight.toFloat()
 
-          // Memperluas boundaries paksa agar Android tidak meng-clip konten sebelum dirender
+          // Force layout height so Android renders the unclipped slider before scaling
           rootCard.layoutParams.height = trueDialogHeight
           rootCard.requestLayout()
 
