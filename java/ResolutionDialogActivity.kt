@@ -84,17 +84,34 @@ class ResolutionDialogActivity : BaseDialogActivity() {
 
     // Dynamic scaling agar muat di landscape
     val rootCard = d.findViewById<LinearLayout>(R.id.dialogRoot)?.parent as? View
-    rootCard?.post {
-      val screenHeight = resources.displayMetrics.heightPixels
-      val dialogHeight = rootCard.height
-      // Berikan margin aman sekitar 48px atas dan bawah
-      val maxAllowedHeight = screenHeight - 96
-      if (dialogHeight > maxAllowedHeight && maxAllowedHeight > 0) {
-        val scale = maxAllowedHeight.toFloat() / dialogHeight.toFloat()
-        rootCard.scaleX = scale
-        rootCard.scaleY = scale
+    rootCard?.viewTreeObserver?.addOnPreDrawListener(object : android.view.ViewTreeObserver.OnPreDrawListener {
+      override fun onPreDraw(): Boolean {
+        rootCard.viewTreeObserver.removeOnPreDrawListener(this)
+
+        // Ukur tinggi utuh konten (unconstrained) untuk menghindari hasil yang sudah ter-clip oleh window
+        rootCard.measure(
+          View.MeasureSpec.makeMeasureSpec(rootCard.width, View.MeasureSpec.EXACTLY),
+          View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        val trueDialogHeight = rootCard.measuredHeight
+        val screenHeight = resources.displayMetrics.heightPixels
+        val maxAllowedHeight = screenHeight - 32 // Margin atas-bawah
+
+        if (trueDialogHeight > maxAllowedHeight && maxAllowedHeight > 0) {
+          val scale = maxAllowedHeight.toFloat() / trueDialogHeight.toFloat()
+
+          // Memperluas boundaries paksa agar Android tidak meng-clip konten sebelum dirender
+          rootCard.layoutParams.height = trueDialogHeight
+          rootCard.requestLayout()
+
+          rootCard.scaleX = scale
+          rootCard.scaleY = scale
+          rootCard.pivotX = rootCard.width / 2f
+          rootCard.pivotY = rootCard.height / 2f
+        }
+        return true
       }
-    }
+    })
   }
 
   private fun initViews(d: Dialog) {
