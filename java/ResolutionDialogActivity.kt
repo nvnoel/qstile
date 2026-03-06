@@ -81,6 +81,20 @@ class ResolutionDialogActivity : BaseDialogActivity() {
     setupListeners()
 
     d.show()
+
+    // Dynamic scaling agar muat di landscape
+    val rootCard = d.findViewById<LinearLayout>(R.id.dialogRoot)?.parent as? View
+    rootCard?.post {
+      val screenHeight = resources.displayMetrics.heightPixels
+      val dialogHeight = rootCard.height
+      // Berikan margin aman sekitar 48px atas dan bawah
+      val maxAllowedHeight = screenHeight - 96
+      if (dialogHeight > maxAllowedHeight && maxAllowedHeight > 0) {
+        val scale = maxAllowedHeight.toFloat() / dialogHeight.toFloat()
+        rootCard.scaleX = scale
+        rootCard.scaleY = scale
+      }
+    }
   }
 
   private fun initViews(d: Dialog) {
