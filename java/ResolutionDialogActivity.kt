@@ -24,7 +24,6 @@ class ResolutionDialogActivity : BaseDialogActivity() {
   private lateinit var tvDpi: TextView
   private lateinit var tvSub: TextView
   private lateinit var layoutSlider: LinearLayout
-  private lateinit var tvConfirmMessage: TextView
 
   private lateinit var layoutButtonsNormal: LinearLayout
   private lateinit var layoutButtonsConfirm: LinearLayout
@@ -82,41 +81,6 @@ class ResolutionDialogActivity : BaseDialogActivity() {
 
     d.show()
 
-    val rootCard = d.findViewById<LinearLayout>(R.id.dialogRoot)?.parent as? View
-    rootCard?.viewTreeObserver?.addOnPreDrawListener(object : android.view.ViewTreeObserver.OnPreDrawListener {
-      override fun onPreDraw(): Boolean {
-        rootCard.viewTreeObserver.removeOnPreDrawListener(this)
-
-        // Ukur tinggi asli konten TANPA constraint layar
-        rootCard.measure(
-          View.MeasureSpec.makeMeasureSpec(rootCard.width, View.MeasureSpec.EXACTLY),
-          View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        )
-        val trueDialogHeight = rootCard.measuredHeight
-        val screenHeight = resources.displayMetrics.heightPixels
-        val maxAllowedHeight = screenHeight - 64 // 64px vertical margin
-
-        // Cek jika butuh scaling (saat landscape dan tinggi melebihi layar)
-        if (trueDialogHeight > maxAllowedHeight && maxAllowedHeight > 0) {
-          val scale = maxAllowedHeight.toFloat() / trueDialogHeight.toFloat()
-
-          // Agar Android merender slider di memori dan tidak memotong bagian bawahnya,
-          // kita set layout parameters secara paksa ke ukuran besarnya sebelum scale
-          rootCard.layoutParams.height = trueDialogHeight
-          rootCard.requestLayout()
-
-          // Kemudian scale ke ukuran layar
-          rootCard.scaleX = scale
-          rootCard.scaleY = scale
-          rootCard.pivotX = rootCard.width / 2f
-          rootCard.pivotY = rootCard.height / 2f
-
-          // Perbarui batas window agar dialog tidak dipotong (clipped) oleh OS
-          d.window?.setLayout(android.view.ViewGroup.LayoutParams.WRAP_CONTENT, maxAllowedHeight)
-        }
-        return true
-      }
-    })
   }
 
   private fun initViews(d: Dialog) {
@@ -127,7 +91,6 @@ class ResolutionDialogActivity : BaseDialogActivity() {
     tvSub                = d.findViewById(R.id.tvPreviewLabel)
 
     layoutSlider         = d.findViewById(R.id.layoutSlider)
-    tvConfirmMessage     = d.findViewById(R.id.tvConfirmMessage)
 
     layoutButtonsNormal  = d.findViewById(R.id.layoutButtonsNormal)
     layoutButtonsConfirm = d.findViewById(R.id.layoutButtonsConfirm)
@@ -155,7 +118,6 @@ class ResolutionDialogActivity : BaseDialogActivity() {
       pendingPct = value.toInt()
       if (outOfSync && fromUser) {
         outOfSync = false
-        tvSub.text = getString(R.string.preview_ready)
       }
       updateDisplay(pendingPct, isPending = pendingPct != curPct)
       if (fromUser && pendingPct != lastVibStep) {
@@ -209,12 +171,10 @@ class ResolutionDialogActivity : BaseDialogActivity() {
     val resH = (baseH * pct / 100.0).toInt()
     val dpi = (baseDpi * pct / 100.0).toInt()
 
-    tvConfirmMessage.text = getString(R.string.confirm_apply_label)
     switchToConfirm(Confirm.APPLY)
   }
 
   private fun showConfirmReset() {
-    tvConfirmMessage.text = getString(R.string.confirm_reset_label)
 
     // Tampilkan nilai aslinya di UI
     val pr = ResolutionManager.physRes(this)
@@ -242,12 +202,10 @@ class ResolutionDialogActivity : BaseDialogActivity() {
     }
 
     layoutSlider.visibility = View.GONE
-    tvConfirmMessage.visibility = View.VISIBLE
 
     layoutButtonsNormal.visibility = View.GONE
     layoutButtonsConfirm.visibility = View.VISIBLE
 
-    tvSub.text = "Konfirmasi"
   }
 
   private fun backToMain() {
@@ -260,12 +218,10 @@ class ResolutionDialogActivity : BaseDialogActivity() {
     }
 
     layoutSlider.visibility = View.VISIBLE
-    tvConfirmMessage.visibility = View.GONE
 
     layoutButtonsNormal.visibility = View.VISIBLE
     layoutButtonsConfirm.visibility = View.GONE
 
-    tvSub.text = getString(R.string.preview_ready)
     updateDisplay(pendingPct, isPending = pendingPct != curPct)
   }
 
