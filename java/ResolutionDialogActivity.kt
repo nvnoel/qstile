@@ -87,8 +87,7 @@ class ResolutionDialogActivity : BaseDialogActivity() {
       override fun onPreDraw(): Boolean {
         rootCard.viewTreeObserver.removeOnPreDrawListener(this)
 
-        // Measure the view WITHOUT screen boundaries so we get the true required height
-        // This ensures the slider at the bottom is included in the measurement, not clipped
+        // Ukur tinggi asli konten TANPA constraint layar
         rootCard.measure(
           View.MeasureSpec.makeMeasureSpec(rootCard.width, View.MeasureSpec.EXACTLY),
           View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
@@ -97,13 +96,16 @@ class ResolutionDialogActivity : BaseDialogActivity() {
         val screenHeight = resources.displayMetrics.heightPixels
         val maxAllowedHeight = screenHeight - 64 // 64px vertical margin
 
+        // Cek jika butuh scaling (saat landscape dan tinggi melebihi layar)
         if (trueDialogHeight > maxAllowedHeight && maxAllowedHeight > 0) {
           val scale = maxAllowedHeight.toFloat() / trueDialogHeight.toFloat()
 
-          // Force layout height so Android renders the unclipped slider before scaling
+          // Agar Android merender slider di memori dan tidak memotong bagian bawahnya,
+          // kita set layout parameters secara paksa ke ukuran besarnya sebelum scale
           rootCard.layoutParams.height = trueDialogHeight
           rootCard.requestLayout()
 
+          // Kemudian scale ke ukuran layar
           rootCard.scaleX = scale
           rootCard.scaleY = scale
           rootCard.pivotX = rootCard.width / 2f
