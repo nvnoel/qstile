@@ -50,14 +50,6 @@
       android:textColor="?attr/colorOnSurfaceVariant"
       android:gravity="center" />
 
-    <androidx.core.widget.NestedScrollView
-      android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:layout_weight="1"
-      android:layout_marginTop="16dp"
-      android:scrollbars="none"
-      android:overScrollMode="never">
-
     <!-- Area Konten Utama -->
     <LinearLayout
       android:id="@+id/layoutMainContent"
@@ -187,15 +179,12 @@
 
     </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
-
     <!-- Divider bottom -->
     <View
       android:id="@+id/dividerBottom"
       android:layout_width="match_parent"
       android:layout_height="1dp"
-      android:layout_marginTop="16dp"
-      android:layout_marginBottom="12dp"
+      android:layout_marginTop="24dp"
       android:background="?attr/colorOutline"
       android:alpha="0.2" />
 
